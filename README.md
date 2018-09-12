@@ -4,9 +4,9 @@ Some tokens have a central issuing authority, like for coins in an online game, 
 
 In cases like this, issuance can be performed in an offchain manner that maintains on-chain trustlessness.
 
-State channels require an initial deposit because it is assumed that the sender has a limited quantity of tokens. In the case of a centralized issuer, you have an implicit infinite deposit of tokens, and this allows tokens to be counterfactually issued with a simple signature.
+State channels require an initial deposit because it is assumed that the sender has a limited quantity of tokens. In the case of a centralized issuer, you have an implicit infinite deposit of tokens, and this allows tokens to be counterfactually issued with a simple signed message.
 
-An example issuance message might look like this:
+An example issuance message, signed by the issuer might look like this:
 
 ```
 struct IssuanceMessage {

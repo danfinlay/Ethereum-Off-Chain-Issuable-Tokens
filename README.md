@@ -28,7 +28,7 @@ function redeemPromisedTokens(bytes payload, uint8 v, bytes32 r, bytes32 s) publ
 ## Pseudolidity Implementation
 
 ```
-contract OffchainIssuableToken is ERC20 {
+contract OffchainIssuableToken is MintableToken {
 
   mapping (address => uint) latestWithdrawBlock;
 

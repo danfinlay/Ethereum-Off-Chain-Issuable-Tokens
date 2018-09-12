@@ -62,3 +62,5 @@ Wallets could store these messages and display them like tokens, and they would 
 - The signed message could include a reference to the issuing contract, to allow the issuing key to issue multiple different tokens.
 - There could be a `redeemAndSend` method so that a user can both redeem their tokens and send some of them in a single transaction.
 
+The token contract is given the power to verify signatures and enforce issuance however it wants. There could be a list of approved issuers, and individual issuers could even have issuance limits to tranche liability of compromised issuing keys.
+

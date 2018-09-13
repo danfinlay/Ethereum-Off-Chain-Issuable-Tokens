@@ -12,12 +12,8 @@ An example issuance message, signed by the issuer might look like this:
 struct IssuanceMessage {
   address recipient;
   uint amount;
-  uint issuanceBlock; // could also use time stamp
 }
 ```
-The issuanceBlock or time stamp is used so that once a message is used to mint and redeem some tokens, no message before that redemption block height is valid. This ensures redeemers are always incentivized to only try to redeem their most recent message, and cannot replay messages.
-
-This requires the issuer to recognize when tokens are redeemed, and restart their `amount` counter for messages sent to that user.
 
 A sample extension to the token interface would be a method such as:
 
@@ -30,12 +26,11 @@ function redeemPromisedTokens(bytes payload, uint8 v, bytes32 r, bytes32 s) publ
 ```
 contract OffchainIssuableToken is MintableToken {
 
-  mapping (address => uint) latestWithdrawBlock;
+  mapping (address => uint) amountMintedSoFar;
 
   struct IssuanceMessage {
     address recipient;
     uint amount;
-    uint issuanceBlock;
   }
 
   function redeemPromisedTokens(bytes payload, uint8 v, bytes32 r, bytes32 s) public returns (bool) {
@@ -43,12 +38,17 @@ contract OffchainIssuableToken is MintableToken {
 
     IssuanceMessage memory msg = parse(payload, v, r, s);
 
-    // Ensure user submits the latest message they have
+    // Ensure user submits larger balanced messages
     // to prevent replay attacks:
-    assert(msg.issuanceBlock > latestWithdrawBlock[msg.sender]);
-    latestWithdrawBlock[msg.sender] = this.blockNumber;
+    assert(msg.amount > amountMintedSoFar[msg.sender]);
 
-    mint(msg.recipient, msg.amount);
+    // Use safe math in practice:
+    uint amountToMint = msg.amount - amountMintedSoFar[msg.sender]
+
+    mint(msg.recipient, amountToMint);
+
+    // Keep track of amount issued for that user.
+    amountMintedSoFar[msg.sender] = msg.amount;
   }
 }
 ```
